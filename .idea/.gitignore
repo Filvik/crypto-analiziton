@@ -1,0 +1,15 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/vcs.xml
+/modules.xml
+/misc.xml
+/jarRepositories.xml
+/sonarlint/securityhotspotstore/index.pb
+/sonarlint/issuestore/index.pb
+/encodings.xml
+/crypto-analiziton.iml
+/compiler.xml
+/sonarlint/issuestore/c/2/c260ee8e02bf0d4ac589dc2ffdc341609c98f777
+/sonarlint/securityhotspotstore/c/2/c260ee8e02bf0d4ac589dc2ffdc341609c98f777
+/uiDesigner.xml
