@@ -3,6 +3,7 @@ package com.example.crypto.analiziton.converter;
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import com.example.crypto.analiziton.model.CurrencyJson;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -15,7 +16,11 @@ public class ConverterForCurrency {
         CurrencyJson.DataCurrency dataCurrency = currencyJson.getDataCurrency();
 
         currencyEntity.setCurrencyName(dataCurrency.getSymbol());
-        currencyEntity.setTickDirection(dataCurrency.getTickDirection());
+        if (StringUtils.hasText(dataCurrency.getTickDirection())) {
+            currencyEntity.setTickDirection(dataCurrency.getTickDirection());
+        } else {
+            currencyEntity.setTickDirection("Invariably");
+        }
         currencyEntity.setPrice(dataCurrency.getLastPrice());
         currencyEntity.setBidPrice(dataCurrency.getBidPrice());
         currencyEntity.setBidSize(dataCurrency.getBidSize());
