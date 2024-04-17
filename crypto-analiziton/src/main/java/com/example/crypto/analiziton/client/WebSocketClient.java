@@ -1,8 +1,9 @@
 package com.example.crypto.analiziton.client;
 
-import com.example.crypto.analiziton.service.CurrencyManipulationInDB;
 import com.example.crypto.analiziton.service.ParseJSONCurrencyService;
+import com.example.crypto.analiziton.service.TickProcessingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -10,10 +11,11 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class WebSocketClient extends TextWebSocketHandler {
 
-    private final CurrencyManipulationInDB currencyManipulationInDB;
+    private final TickProcessingService tickProcessingService;
     private final ParseJSONCurrencyService parseJSONCurrencyService;
 
     private final String currency = "{\"op\":\"subscribe\",\"args\":[\"tickers.BTCUSDT\"]}";
@@ -25,8 +27,13 @@ public class WebSocketClient extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        currencyManipulationInDB.saveCurrencyEntityInDB(parseJSONCurrencyService.parseJson(message));
-        System.out.println("Received: " + message.getPayload());
+        try {
+            tickProcessingService.processIncomingTick(parseJSONCurrencyService.parseJson(message));
+            System.out.println("Received: " + message.getPayload());
+        }
+      catch (Exception e){
+            log.warn("Error record in BD: " + e);
+      }
     }
 
     @Override

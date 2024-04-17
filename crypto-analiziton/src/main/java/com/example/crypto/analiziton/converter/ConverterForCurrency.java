@@ -16,11 +16,7 @@ public class ConverterForCurrency {
         CurrencyJson.DataCurrency dataCurrency = currencyJson.getDataCurrency();
 
         currencyEntity.setCurrencyName(dataCurrency.getSymbol());
-        if (StringUtils.hasText(dataCurrency.getTickDirection())) {
-            currencyEntity.setTickDirection(dataCurrency.getTickDirection());
-        } else {
-            currencyEntity.setTickDirection("Invariably");
-        }
+        currencyEntity.setTickDirection(dataCurrency.getTickDirection());
         currencyEntity.setPrice(dataCurrency.getLastPrice());
         currencyEntity.setBidPrice(dataCurrency.getBidPrice());
         currencyEntity.setBidSize(dataCurrency.getBidSize());

@@ -18,14 +18,13 @@ public class ParseJSONCurrencyService {
 
     private final ObjectMapper objectMapper;
     private final ConverterForCurrency converter;
-    private final CurrencyManipulationInDB currencyManipulationInDB;
 
     public CurrencyEntity parseJson(TextMessage message) {
         try {
             CurrencyJson currencyJson = objectMapper.readValue(message.getPayload(), CurrencyJson.class);
             return converter.convertToEntity(currencyJson);
         } catch (IOException e) {
-            log.error("Error parsing JSON message", e);
+            log.warn("Error parsing JSON message", e);
             throw new ParseJSONCurrencyException("Error parsing JSON message");
         }
     }

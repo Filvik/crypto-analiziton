@@ -14,6 +14,6 @@ public class CurrencyManipulationInDB {
     private final CurrencyRepository currencyRepository;
 
     public void saveCurrencyEntityInDB(CurrencyEntity currencyEntity){
-      currencyRepository.save(currencyEntity);
+      currencyRepository.saveAndFlush(currencyEntity);
     }
 }
