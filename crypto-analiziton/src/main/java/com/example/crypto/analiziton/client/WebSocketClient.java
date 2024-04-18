@@ -28,8 +28,8 @@ public class WebSocketClient extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         try {
-            tickProcessingService.processIncomingTick(parseJSONCurrencyService.parseJson(message));
             System.out.println("Received: " + message.getPayload());
+            tickProcessingService.processIncomingTick(parseJSONCurrencyService.parseJson(message));
         }
       catch (Exception e){
             log.warn("Error record in BD: " + e);

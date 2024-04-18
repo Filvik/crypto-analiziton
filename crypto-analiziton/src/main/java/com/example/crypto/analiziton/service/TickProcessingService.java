@@ -1,10 +1,13 @@
 package com.example.crypto.analiziton.service;
 
 import com.example.crypto.analiziton.exeption.ValidCurrencyEntityException;
+import com.example.crypto.analiziton.helper.TimestampAdjuster;
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +21,10 @@ public class TickProcessingService {
 
     public void processIncomingTick(CurrencyEntity tick) {
         CurrencyEntity currencyEntityForRecord;
-        if (lastCurrencyEntity != null) {
+        if (emptyFieldCurrencyService.checkBaseFields(lastCurrencyEntity)) {
             currencyEntityForRecord = updateCurrencyEntityForRecord(lastCurrencyEntity, tick);
         } else {
+            log.warn("The last record has empty field(s).");
             currencyEntityForRecord = tick;
         }
         lastCurrencyEntity = currencyEntityForRecord;
@@ -31,58 +35,70 @@ public class TickProcessingService {
 
         CurrencyEntity currencyEntityForRecord = new CurrencyEntity();
         try {
-            if (emptyFieldCurrencyService.check(lastCurrencyEntity)) {
-
-                if (tick.getCurrencyName() != null && !tick.getCurrencyName().isEmpty()) {
-                    currencyEntityForRecord.setCurrencyName(tick.getCurrencyName());
-                }
-
-                if (tick.getTickDirection() != null && !tick.getTickDirection().isEmpty()) {
-                    currencyEntityForRecord.setTickDirection(tick.getTickDirection());
-                } else {
-                    currencyEntityForRecord.setTickDirection(lastCurrencyEntity.getTickDirection());
-                }
-
-                if (tick.getPrice() != 0) {
-                    currencyEntityForRecord.setPrice(tick.getPrice());
-                } else {
-                    currencyEntityForRecord.setPrice(lastCurrencyEntity.getPrice());
-                }
-
-                if (tick.getBidPrice() != 0) {
-                    currencyEntityForRecord.setBidPrice(tick.getBidPrice());
-                } else {
-                    currencyEntityForRecord.setBidPrice(lastCurrencyEntity.getBidPrice());
-                }
-
-                if (tick.getBidSize() != 0) {
-                    currencyEntityForRecord.setBidSize(tick.getBidSize());
-                } else {
-                    currencyEntityForRecord.setBidSize(lastCurrencyEntity.getBidSize());
-                }
-
-                if (tick.getAskPrice() != 0) {
-                    currencyEntityForRecord.setAskPrice(tick.getAskPrice());
-                } else {
-                    currencyEntityForRecord.setAskPrice(lastCurrencyEntity.getAskPrice());
-                }
-
-                if (tick.getAskSize() != 0) {
-                    currencyEntityForRecord.setAskSize(tick.getAskSize());
-                } else {
-                    currencyEntityForRecord.setAskSize(lastCurrencyEntity.getAskSize());
-                }
-
-                if (!tick.getCreatedAt().equals(null)) {
-                    currencyEntityForRecord.setCreatedAt(tick.getCreatedAt());
-                } else {
-                    currencyEntityForRecord.setCreatedAt(lastCurrencyEntity.getCreatedAt());
-                }
-
-            } else {
-                log.warn("Error when fill in new data.");
-                throw new RuntimeException("Error when fill in new data.");
+            // Base block
+            if (tick.getCurrencyName() != null && !tick.getCurrencyName().isEmpty()) {
+                currencyEntityForRecord.setCurrencyName(tick.getCurrencyName());
             }
+
+            if (tick.getTickDirection() != null && !tick.getTickDirection().isEmpty()) {
+                currencyEntityForRecord.setTickDirection(tick.getTickDirection());
+            } else {
+                currencyEntityForRecord.setTickDirection(lastCurrencyEntity.getTickDirection());
+            }
+
+            if (tick.getPrice() != 0) {
+                currencyEntityForRecord.setPrice(tick.getPrice());
+            } else {
+                currencyEntityForRecord.setPrice(lastCurrencyEntity.getPrice());
+            }
+
+            if (!Objects.equals(tick.getCreatedAt(), null)) {
+                currencyEntityForRecord.setCreatedAt(tick.getCreatedAt());
+            } else {
+                currencyEntityForRecord.setCreatedAt(TimestampAdjuster.addMillisecondsToTimestamp(lastCurrencyEntity.getCreatedAt(), 100));
+            }
+
+            // Extra block
+            if (tick.getBidPrice() != 0) {
+                currencyEntityForRecord.setBidPrice(tick.getBidPrice());
+            } else {
+                if (lastCurrencyEntity.getBidPrice() != 0) {
+                    currencyEntityForRecord.setBidPrice(lastCurrencyEntity.getBidPrice());
+                } else {
+                    currencyEntityForRecord.setBidPrice(0.01);
+                }
+            }
+
+            if (tick.getBidSize() != 0) {
+                currencyEntityForRecord.setBidSize(tick.getBidSize());
+            } else {
+                if (lastCurrencyEntity.getBidSize() != 0) {
+                    currencyEntityForRecord.setBidSize(lastCurrencyEntity.getBidSize());
+                } else {
+                    currencyEntityForRecord.setBidSize(0.01);
+                }
+            }
+
+            if (tick.getAskPrice() != 0) {
+                currencyEntityForRecord.setAskPrice(tick.getAskPrice());
+            } else {
+                if (lastCurrencyEntity.getAskPrice() != 0) {
+                    currencyEntityForRecord.setAskPrice(lastCurrencyEntity.getAskPrice());
+                } else {
+                    currencyEntityForRecord.setAskPrice(0.01);
+                }
+            }
+
+            if (tick.getAskSize() != 0) {
+                currencyEntityForRecord.setAskSize(tick.getAskSize());
+            } else {
+                if (lastCurrencyEntity.getAskSize() != 0) {
+                    currencyEntityForRecord.setAskSize(lastCurrencyEntity.getAskSize());
+                } else {
+                    currencyEntityForRecord.setAskSize(0.01);
+                }
+            }
+
         } catch (Exception exception) {
             log.warn("CurrencyEntity from BD failed validation.");
             throw new ValidCurrencyEntityException("CurrencyEntity from BD failed validation.");

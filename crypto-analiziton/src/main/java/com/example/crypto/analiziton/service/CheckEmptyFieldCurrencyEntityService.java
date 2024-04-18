@@ -10,7 +10,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CheckEmptyFieldCurrencyEntityService {
 
-    public boolean check(CurrencyEntity currencyEntity) {
+    public boolean checkBaseFields(CurrencyEntity currencyEntity) {
+        if (currencyEntity == null) {
+            return false;
+        }
+        boolean isCurrencyNameValid = currencyEntity.getCurrencyName() != null && !currencyEntity.getCurrencyName().trim().isEmpty();
+        boolean isTickDirectionValid = currencyEntity.getTickDirection() != null && !currencyEntity.getTickDirection().trim().isEmpty();
+        boolean isPriceValid = currencyEntity.getPrice() != 0;
+        boolean isCreatedAtValid = currencyEntity.getCreatedAt() != null;
+
+        return isCurrencyNameValid && isTickDirectionValid && isPriceValid && isCreatedAtValid;
+    }
+
+    public boolean checkFullFieldsBeforeRecordInBD(CurrencyEntity currencyEntity) {
         if (currencyEntity == null) {
             return false;
         }

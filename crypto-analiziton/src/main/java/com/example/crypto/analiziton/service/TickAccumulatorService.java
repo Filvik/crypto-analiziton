@@ -39,8 +39,9 @@ public class TickAccumulatorService {
     }
 
     public synchronized void addTick(CurrencyEntity tick) {
-        emptyFieldCurrencyService.check(tick);
-        ticks.add(tick);
+        if (emptyFieldCurrencyService.checkFullFieldsBeforeRecordInBD(tick)) {
+            ticks.add(tick);
+        }
     }
 
     private synchronized void flushToDatabase() {
