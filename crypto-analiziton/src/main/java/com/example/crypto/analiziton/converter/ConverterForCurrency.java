@@ -2,13 +2,12 @@ package com.example.crypto.analiziton.converter;
 
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import com.example.crypto.analiziton.model.CurrencyJson;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 
-@Service
+@Component
 public class ConverterForCurrency {
 
     public CurrencyEntity convertToEntity(CurrencyJson currencyJson) {

@@ -7,13 +7,14 @@ import com.example.crypto.analiziton.model.CurrencyJson;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
+
 import java.io.IOException;
 
-@Service
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class ParseJSONCurrencyService {
 
     private final ObjectMapper objectMapper;

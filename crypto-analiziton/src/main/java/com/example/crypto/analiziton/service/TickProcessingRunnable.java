@@ -5,19 +5,35 @@ import com.example.crypto.analiziton.helper.TimestampAdjuster;
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-@Service
 @RequiredArgsConstructor
 @Slf4j
-public class TickProcessingService {
+public class TickProcessingRunnable implements Runnable {
 
     private final TickAccumulatorService tickAccumulator;
     private final CheckEmptyFieldCurrencyEntityService emptyFieldCurrencyService;
     private CurrencyEntity lastCurrencyEntity;
+    private final BlockingQueue<CurrencyEntity> messageQueue = new LinkedBlockingQueue<>();
 
+    @Override
+    public void run() {
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                CurrencyEntity currencyEntity = messageQueue.take();
+                processIncomingTick(currencyEntity);
+            } catch (InterruptedException e) {
+                log.warn("Error");
+            }
+        }
+    }
+
+    public void putCurrencyEntity(CurrencyEntity tick){
+        messageQueue.add(tick);
+    }
 
     public void processIncomingTick(CurrencyEntity tick) {
         CurrencyEntity currencyEntityForRecord;
@@ -105,5 +121,6 @@ public class TickProcessingService {
         }
         return currencyEntityForRecord;
     }
+
 }
 

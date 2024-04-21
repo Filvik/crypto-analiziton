@@ -3,11 +3,11 @@ package com.example.crypto.analiziton.service;
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class CheckEmptyFieldCurrencyEntityService {
 
     public boolean checkBaseFields(CurrencyEntity currencyEntity) {

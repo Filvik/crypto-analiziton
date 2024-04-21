@@ -6,19 +6,18 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-@Service
 @Slf4j
 @Data
+@Service
 public class TickAccumulatorService {
 
     private final CheckEmptyFieldCurrencyEntityService emptyFieldCurrencyService;
-    private List<CurrencyEntity> ticks = new ArrayList<>();
+    private BlockingQueue<CurrencyEntity> ticks = new LinkedBlockingQueue<>();
     private final Timer timer = new Timer();
     private final CurrencyRepository currencyRepository;
     private int delay;
