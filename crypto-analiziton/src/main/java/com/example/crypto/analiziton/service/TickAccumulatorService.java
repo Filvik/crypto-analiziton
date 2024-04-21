@@ -33,6 +33,7 @@ public class TickAccumulatorService {
             @Override
             public void run() {
                 flushToDatabase();
+                log.info("Active threads: " + Thread.activeCount());
             }
         }, delay, period);
     }
