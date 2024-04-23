@@ -1,6 +1,5 @@
 package com.example.crypto.analiziton.service;
 
-import com.example.crypto.analiziton.client.WebSocketClient;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +17,13 @@ public class WebSocketConnectionManagerService {
     @Value("${bybit.ws.url}")
     private String bybitWsUrl;
 
-    private final WebSocketClient webSocketClient;
+    private final WebSocketClientService webSocketClientService;
 
 
     @PostConstruct
     public void initializeWebSocketConnection() {
         WebSocketConnectionManager connectionManager = new WebSocketConnectionManager(
-                new StandardWebSocketClient(), webSocketClient, bybitWsUrl
+                new StandardWebSocketClient(), webSocketClientService, bybitWsUrl
         );
         connectionManager.start();
     }

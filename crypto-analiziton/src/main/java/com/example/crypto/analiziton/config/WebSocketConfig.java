@@ -1,6 +1,6 @@
 package com.example.crypto.analiziton.config;
 
-import com.example.crypto.analiziton.client.WebSocketClient;
+import com.example.crypto.analiziton.service.WebSocketClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -12,11 +12,11 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final WebSocketClient webSocketClient;
+    private final WebSocketClientService webSocketClientService;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketClient, "/ws/bybit").setAllowedOrigins("*");
+        registry.addHandler(webSocketClientService, "/ws/bybit").setAllowedOrigins("*");
     }
 }
 

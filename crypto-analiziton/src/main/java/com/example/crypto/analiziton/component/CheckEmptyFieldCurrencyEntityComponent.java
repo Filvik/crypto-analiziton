@@ -1,4 +1,4 @@
-package com.example.crypto.analiziton.service;
+package com.example.crypto.analiziton.component;
 
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class CheckEmptyFieldCurrencyEntityService {
+public class CheckEmptyFieldCurrencyEntityComponent {
 
     public boolean checkBaseFields(CurrencyEntity currencyEntity) {
         if (currencyEntity == null) {

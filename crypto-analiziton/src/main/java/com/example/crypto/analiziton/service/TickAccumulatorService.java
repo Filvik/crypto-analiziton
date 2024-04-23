@@ -1,54 +1,59 @@
 package com.example.crypto.analiziton.service;
 
+import com.example.crypto.analiziton.component.CheckEmptyFieldCurrencyEntityComponent;
 import com.example.crypto.analiziton.model.CurrencyEntity;
-import com.example.crypto.analiziton.repository.CurrencyRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static com.example.crypto.analiziton.thread_detail.ThreadDetailsFormatter.logFormattedThreadDetails;
 
 @Slf4j
 @Data
 @Service
+@EnableScheduling
 public class TickAccumulatorService {
 
-    private final CheckEmptyFieldCurrencyEntityService emptyFieldCurrencyService;
+    private final CheckEmptyFieldCurrencyEntityComponent emptyFieldCurrencyService;
     private BlockingQueue<CurrencyEntity> ticks = new LinkedBlockingQueue<>();
-    private final Timer timer = new Timer();
-    private final CurrencyRepository currencyRepository;
+    private final CurrencyManipulationInDBService manipulationInDBService;
+
+    @Value("${schedule.delay}")
     private int delay;
+
+    @Value("${schedule.period}")
     private int period;
 
-    public TickAccumulatorService(CurrencyRepository currencyRepository,
-                                  CheckEmptyFieldCurrencyEntityService emptyFieldCurrencyService,
-                                  @Value("${delay}") int delay,
-                                  @Value("${period}") int period) {
+    public TickAccumulatorService(CheckEmptyFieldCurrencyEntityComponent emptyFieldCurrencyService,
+                                  CurrencyManipulationInDBService manipulationInDBService) {
         this.emptyFieldCurrencyService = emptyFieldCurrencyService;
-        this.currencyRepository = currencyRepository;
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                flushToDatabase();
-                log.info("Active threads: " + Thread.activeCount());
-            }
-        }, delay, period);
+        this.manipulationInDBService = manipulationInDBService;
     }
 
-    public synchronized void addTick(CurrencyEntity tick) {
+    @Scheduled(fixedDelayString = "${schedule.delay}", initialDelayString = "${schedule.period}")
+    public void processTicks() {
+        List<CurrencyEntity> ticksForRecord = new ArrayList<>();
+        log.info("Before record in new collection: " + ticks.size());
+        ticks.drainTo(ticksForRecord);
+        log.info("After record in new collection: " + ticks.size());
+        log.info("Before record in DB: " + ticksForRecord.size());
+        if (!ticksForRecord.isEmpty()) {
+            manipulationInDBService.saveCollectionCurrencyEntityInDB(ticksForRecord);
+        }
+//        logFormattedThreadDetails();
+    }
+
+    public void addTick(CurrencyEntity tick) {
         if (emptyFieldCurrencyService.checkFullFieldsBeforeRecordInBD(tick)) {
             ticks.add(tick);
         }
     }
-
-    private synchronized void flushToDatabase() {
-        if (!ticks.isEmpty()) {
-            currencyRepository.saveAllAndFlush(ticks);
-            ticks.clear();
-        }
-    }
 }
-

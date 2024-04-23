@@ -1,8 +1,9 @@
-package com.example.crypto.analiziton.service;
+package com.example.crypto.analiziton.component;
 
 import com.example.crypto.analiziton.exeption.ValidCurrencyEntityException;
-import com.example.crypto.analiziton.helper.TimestampAdjuster;
+import com.example.crypto.analiziton.helper_time.TimestampAdjuster;
 import com.example.crypto.analiziton.model.CurrencyEntity;
+import com.example.crypto.analiziton.service.TickAccumulatorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,12 +11,13 @@ import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-@RequiredArgsConstructor
+
 @Slf4j
+@RequiredArgsConstructor
 public class TickProcessingRunnable implements Runnable {
 
     private final TickAccumulatorService tickAccumulator;
-    private final CheckEmptyFieldCurrencyEntityService emptyFieldCurrencyService;
+    private final CheckEmptyFieldCurrencyEntityComponent emptyFieldCurrencyService;
     private CurrencyEntity lastCurrencyEntity;
     private final BlockingQueue<CurrencyEntity> messageQueue = new LinkedBlockingQueue<>();
 
@@ -26,7 +28,10 @@ public class TickProcessingRunnable implements Runnable {
                 CurrencyEntity currencyEntity = messageQueue.take();
                 processIncomingTick(currencyEntity);
             } catch (InterruptedException e) {
-                log.warn("Error");
+                log.warn("Thread was interrupted during the processing of currency data." +
+                        " Exiting the loop to shut down the thread safely.");
+                Thread.currentThread().interrupt();
+                break;
             }
         }
     }
@@ -121,6 +126,5 @@ public class TickProcessingRunnable implements Runnable {
         }
         return currencyEntityForRecord;
     }
-
 }
 

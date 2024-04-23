@@ -1,4 +1,4 @@
-package com.example.crypto.analiziton.service;
+package com.example.crypto.analiziton.component;
 
 import com.example.crypto.analiziton.converter.ConverterForCurrency;
 import com.example.crypto.analiziton.exeption.ParseJSONCurrencyException;
@@ -15,7 +15,7 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class ParseJSONCurrencyService {
+public class ParseJSONCurrencyComponent {
 
     private final ObjectMapper objectMapper;
     private final ConverterForCurrency converter;

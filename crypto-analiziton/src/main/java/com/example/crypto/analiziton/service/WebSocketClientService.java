@@ -1,8 +1,10 @@
-package com.example.crypto.analiziton.client;
+package com.example.crypto.analiziton.service;
 
+import com.example.crypto.analiziton.component.CheckEmptyFieldCurrencyEntityComponent;
+import com.example.crypto.analiziton.component.ParseJSONCurrencyComponent;
+import com.example.crypto.analiziton.component.TickProcessingRunnable;
 import com.example.crypto.analiziton.enums.CurrencyEnum;
 import com.example.crypto.analiziton.model.CurrencyEntity;
-import com.example.crypto.analiziton.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
@@ -17,23 +19,23 @@ import java.util.concurrent.ExecutorService;
 
 @Service
 @Slf4j
-public class WebSocketClient extends TextWebSocketHandler {
+public class WebSocketClientService extends TextWebSocketHandler {
 
-    private final ParseJSONCurrencyService parseJSONCurrencyService;
+    private final ParseJSONCurrencyComponent parseJSONCurrencyComponent;
     private final RunStreamSubscribersService runStreamSubscribersService;
     private Map<String, TickProcessingRunnable> runnableMap = new ConcurrentHashMap<>();
 
-    public WebSocketClient(ParseJSONCurrencyService parseJSONCurrencyService,
-                           RunStreamSubscribersService runStreamSubscribersService,
-                           TickAccumulatorService tickAccumulatorService,
-                           CheckEmptyFieldCurrencyEntityService checkEmptyFieldCurrencyEntityService,
-                           ExecutorService executor) {
-        this.parseJSONCurrencyService = parseJSONCurrencyService;
+    public WebSocketClientService(ParseJSONCurrencyComponent parseJSONCurrencyComponent,
+                                  RunStreamSubscribersService runStreamSubscribersService,
+                                  TickAccumulatorService tickAccumulatorService,
+                                  CheckEmptyFieldCurrencyEntityComponent checkEmptyFieldCurrencyEntityComponent,
+                                  ExecutorService executor) {
+        this.parseJSONCurrencyComponent = parseJSONCurrencyComponent;
         this.runStreamSubscribersService = runStreamSubscribersService;
 
         for (CurrencyEnum currency : CurrencyEnum.values()) {
             runnableMap.put(currency.getSymbol(),
-                    new TickProcessingRunnable(tickAccumulatorService, checkEmptyFieldCurrencyEntityService));
+                    new TickProcessingRunnable(tickAccumulatorService, checkEmptyFieldCurrencyEntityComponent));
         }
         runnableMap.values().forEach(executor::submit);
     }
@@ -51,8 +53,8 @@ public class WebSocketClient extends TextWebSocketHandler {
             if (message.getPayload().contains("\"success\":true")) {
                 log.info("Confirmation of successful registration to receive data received.");
             } else {
-                log.info("Received: " + message.getPayload());
-                CurrencyEntity currencyEntity = parseJSONCurrencyService.parseJson(message);
+//                log.info("Received: " + message.getPayload());
+                CurrencyEntity currencyEntity = parseJSONCurrencyComponent.parseJson(message);
                 runnableMap.get(currencyEntity.getCurrencyName()).putCurrencyEntity(currencyEntity);
             }
         } catch (Exception e) {
