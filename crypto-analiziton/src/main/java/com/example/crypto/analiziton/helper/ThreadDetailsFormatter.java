@@ -1,4 +1,4 @@
-package com.example.crypto.analiziton.thread_detail;
+package com.example.crypto.analiziton.helper;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -6,7 +6,9 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "currency")
+@Table(name = "currency", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"currencyName", "createdAt"})
+})
 @Data
 public class CurrencyEntity {
 

@@ -1,7 +1,7 @@
 package com.example.crypto.analiziton.component;
 
 import com.example.crypto.analiziton.exeption.ValidCurrencyEntityException;
-import com.example.crypto.analiziton.helper_time.TimestampAdjuster;
+import com.example.crypto.analiziton.helper.TimestampAdjuster;
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import com.example.crypto.analiziton.service.TickAccumulatorService;
 import lombok.RequiredArgsConstructor;

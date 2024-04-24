@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.example.crypto.analiziton.thread_detail.ThreadDetailsFormatter.logFormattedThreadDetails;
+import static com.example.crypto.analiziton.helper.ThreadDetailsFormatter.logFormattedThreadDetails;
 
 @Slf4j
 @Data
@@ -48,7 +48,7 @@ public class TickAccumulatorService {
         if (!ticksForRecord.isEmpty()) {
             manipulationInDBService.saveCollectionCurrencyEntityInDB(ticksForRecord);
         }
-        logFormattedThreadDetails();
+        //logFormattedThreadDetails();
     }
 
     public void addTick(CurrencyEntity tick) {

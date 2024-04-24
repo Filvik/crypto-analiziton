@@ -1,8 +1,11 @@
-package com.example.crypto.analiziton.helper_time;
+package com.example.crypto.analiziton.helper;
+
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+@Component
 public class TimestampAdjuster {
     public static Timestamp addMillisecondsToTimestamp(Timestamp originalTimestamp, int milliseconds) {
         if (originalTimestamp == null) {
