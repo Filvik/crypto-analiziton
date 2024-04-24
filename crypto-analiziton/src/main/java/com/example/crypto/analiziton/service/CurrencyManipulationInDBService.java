@@ -21,31 +21,18 @@ public class CurrencyManipulationInDBService {
     @Transactional
     public void saveCollectionCurrencyEntityInDB(List<CurrencyEntity> ticks) {
         if (!ticks.isEmpty()) {
-            try {
-                long start = System.currentTimeMillis();
-                currencyRepository.saveAllAndFlush(ticks);
-                long stop = System.currentTimeMillis();
-                log.info("Size collection: " + ticks.size());
-                log.info("Recording time: " + (stop - start));
-            } catch (Exception e) {
-                log.error("Error saving ticks to DB", e);
+            long startRecord = System.currentTimeMillis();
+            for (CurrencyEntity tick : ticks) {
+                try {
+                    currencyRepository.save(tick);
+                } catch (Exception e) {
+                    log.warn("Error saving ticks:" + tick.getCurrencyName() + ". Time: " + tick.getCreatedAt());
+                }
             }
+            long stopRecord = System.currentTimeMillis();
+            currencyRepository.flush();
+            log.info("Size collection: " + ticks.size());
+            log.info("Recording time: " + (stopRecord - startRecord));
         }
     }
-
-
-//    @Transactional
-//    public synchronized void saveCollectionCurrencyEntityInDB(List<CurrencyEntity> ticks) {
-//        if (!ticks.isEmpty()) {
-//            long start = System.currentTimeMillis();
-//            for (CurrencyEntity tick : ticks) {
-//                currencyRepository.save(tick);
-//            }
-//            long stop = System.currentTimeMillis();
-//            currencyRepository.flush();
-//            System.out.println(ticks.size());
-//            System.out.println(stop - start);
-//        }
-//    }
-
 }

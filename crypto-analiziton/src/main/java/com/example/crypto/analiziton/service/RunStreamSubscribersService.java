@@ -1,6 +1,10 @@
 package com.example.crypto.analiziton.service;
 
+import com.example.crypto.analiziton.component.CheckEmptyFieldCurrencyEntityComponent;
+import com.example.crypto.analiziton.component.ParseJSONCurrencyComponent;
+import com.example.crypto.analiziton.component.TickProcessingRunnable;
 import com.example.crypto.analiziton.enums.CurrencyEnum;
+import com.example.crypto.analiziton.model.CurrencyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -14,24 +18,45 @@ import java.util.concurrent.*;
 public class RunStreamSubscribersService {
 
     private final ExecutorService executor;
-    private final Map<CurrencyEnum, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final ParseJSONCurrencyComponent parseJSONCurrencyComponent;
+    private Map<String, TickProcessingRunnable> runnableMap = new ConcurrentHashMap<>();
 
-    public RunStreamSubscribersService(ExecutorService executor) {
+    public RunStreamSubscribersService(ExecutorService executor,
+                                       TickAccumulatorService tickAccumulatorService,
+                                       CheckEmptyFieldCurrencyEntityComponent checkEmptyFieldCurrencyEntityComponent,
+                                       ParseJSONCurrencyComponent parseJSONCurrencyComponent) {
         this.executor = executor;
+        this.parseJSONCurrencyComponent = parseJSONCurrencyComponent;
+
+        for (CurrencyEnum currency : CurrencyEnum.values()) {
+            runnableMap.put(currency.getSymbol(),
+                    new TickProcessingRunnable(tickAccumulatorService, checkEmptyFieldCurrencyEntityComponent));
+        }
+        runnableMap.values().forEach(executor::submit);
     }
 
     public TextMessage createTaskForCurrency(CurrencyEnum currency) {
-            try {
-                String subscriptionMessage = getSubscriptionMessageForCurrency(currency);
-                return new TextMessage(subscriptionMessage);
-            } catch (Exception e) {
-                log.error("Failed to queue message for currency " + currency, e);
-            }
+        try {
+            String subscriptionMessage = getSubscriptionMessageForCurrency(currency);
+            return new TextMessage(subscriptionMessage);
+        } catch (Exception e) {
+            log.error("Failed to queue message for currency: " + currency, e);
+        }
         return null;
     }
 
-    public void removeSession(WebSocketSession session) {
-        sessions.values().remove(session);
+    public void handleMessage(WebSocketSession session, TextMessage message) {
+        try {
+            if (message.getPayload().contains("\"success\":true")) {
+                log.info("Confirmation of successful registration to receive data received.");
+            } else {
+//                log.info("Received: " + message.getPayload());
+                CurrencyEntity currencyEntity = parseJSONCurrencyComponent.parseJson(message);
+                runnableMap.get(currencyEntity.getCurrencyName()).putCurrencyEntity(currencyEntity);
+            }
+        } catch (Exception e) {
+            log.warn("Error processing message: " + e.getMessage());
+        }
     }
 
     public void shutdown() {
@@ -47,7 +72,7 @@ public class RunStreamSubscribersService {
         }
     }
 
-    public String getSubscriptionMessageForCurrency(CurrencyEnum currency) {
+    private String getSubscriptionMessageForCurrency(CurrencyEnum currency) {
         return String.format("{\"op\":\"subscribe\",\"args\":[\"tickers.%s\"]}", currency.getSymbol());
     }
 }

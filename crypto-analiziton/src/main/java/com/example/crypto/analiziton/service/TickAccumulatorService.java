@@ -48,7 +48,7 @@ public class TickAccumulatorService {
         if (!ticksForRecord.isEmpty()) {
             manipulationInDBService.saveCollectionCurrencyEntityInDB(ticksForRecord);
         }
-//        logFormattedThreadDetails();
+        logFormattedThreadDetails();
     }
 
     public void addTick(CurrencyEntity tick) {
