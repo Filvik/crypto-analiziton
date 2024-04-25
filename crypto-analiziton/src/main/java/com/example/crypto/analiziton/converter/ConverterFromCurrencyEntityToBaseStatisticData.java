@@ -1,7 +1,7 @@
 package com.example.crypto.analiziton.converter;
 
 import com.example.crypto.analiziton.dto.BaseStatisticData;
-import com.example.crypto.analiziton.helper.CalculationOfDataByTicks;
+import com.example.crypto.analiziton.helper.ReceiveDataByTicks;
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,19 +15,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConverterFromCurrencyEntityToBaseStatisticData {
 
-    private final CalculationOfDataByTicks calculationOfDataByTicks;
+    private final ReceiveDataByTicks receiveDataByTicks;
 
     public BaseStatisticData converting(List<CurrencyEntity> currencyEntityList,
                                         Timestamp startTimestamp,
                                         Timestamp stopTimestamp) {
         BaseStatisticData baseStatisticData = new BaseStatisticData();
-        baseStatisticData.setCurrencyName(currencyEntityList.getFirst().getCurrencyName());
+        baseStatisticData.setCurrencyName(currencyEntityList.get(0).getCurrencyName());
         baseStatisticData.setStartTime(startTimestamp);
         baseStatisticData.setStopTime(stopTimestamp);
-        baseStatisticData.setNeutralTicks(calculationOfDataByTicks.receiveNeutralTicks(currencyEntityList));
-        baseStatisticData.setAscendingTicks(calculationOfDataByTicks.receiveAscendingTicks(currencyEntityList));
-        baseStatisticData.setDescendingTicks(calculationOfDataByTicks.receiveDescendingTicks(currencyEntityList));
-        baseStatisticData.setAllCountingTicks(calculationOfDataByTicks.receiveAllCountingTicks(currencyEntityList));
+        baseStatisticData.setNeutralTicks(receiveDataByTicks.receiveNeutralTicks(currencyEntityList));
+        baseStatisticData.setAscendingTicks(receiveDataByTicks.receiveAscendingTicks(currencyEntityList));
+        baseStatisticData.setDescendingTicks(receiveDataByTicks.receiveDescendingTicks(currencyEntityList));
+        baseStatisticData.setAllCountingTicks(receiveDataByTicks.receiveAllCountingTicks(currencyEntityList));
+        baseStatisticData.setPriceStart(receiveDataByTicks.receiveStartPrice(currencyEntityList, startTimestamp));
+        baseStatisticData.setPriceStop(receiveDataByTicks.receiveStopPrice(currencyEntityList, stopTimestamp));
+        baseStatisticData.setMaxValue(receiveDataByTicks.receiveMaxValue(currencyEntityList));
+        baseStatisticData.setMinValue(receiveDataByTicks.receiveMinValue(currencyEntityList));
         return baseStatisticData;
     }
 }

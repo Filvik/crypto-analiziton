@@ -5,7 +5,6 @@ import com.example.crypto.analiziton.converter.ConverterFromCurrencyEntityToFull
 import com.example.crypto.analiziton.dto.FullStatisticData;
 import com.example.crypto.analiziton.dto.BaseStatisticData;
 import com.example.crypto.analiziton.model.CurrencyEntity;
-import com.example.crypto.analiziton.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReceiveDataService {
 
-    private final CurrencyRepository currencyRepository;
     private final CurrencyManipulationInDBService currencyManipulationInDBService;
     private final ConverterFromCurrencyEntityToBaseStatisticData converterFromCurrencyEntityToBaseStatisticData;
     private final ConverterFromCurrencyEntityToFullStatisticData converterFromCurrencyEntityToFullStatisticData;

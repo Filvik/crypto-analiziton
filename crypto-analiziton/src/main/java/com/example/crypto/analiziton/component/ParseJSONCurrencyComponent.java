@@ -1,6 +1,6 @@
 package com.example.crypto.analiziton.component;
 
-import com.example.crypto.analiziton.converter.ConverterForCurrency;
+import com.example.crypto.analiziton.converter.ConverterFromCurrencyJsonToCurrencyEntity;
 import com.example.crypto.analiziton.exeption.ParseJSONCurrencyException;
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import com.example.crypto.analiziton.model.CurrencyJson;
@@ -18,7 +18,7 @@ import java.io.IOException;
 public class ParseJSONCurrencyComponent {
 
     private final ObjectMapper objectMapper;
-    private final ConverterForCurrency converter;
+    private final ConverterFromCurrencyJsonToCurrencyEntity converter;
 
     public CurrencyEntity parseJson(TextMessage message) {
         try {

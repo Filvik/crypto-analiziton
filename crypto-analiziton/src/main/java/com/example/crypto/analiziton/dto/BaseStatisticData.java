@@ -11,6 +11,10 @@ public class BaseStatisticData {
     private long descendingTicks;
     private long neutralTicks;
     private long allCountingTicks;
+    private double priceStart;
+    private double priceStop;
+    private double maxValue;
+    private double minValue;
     private Timestamp startTime;
     private Timestamp stopTime;
 }

@@ -37,6 +37,7 @@ public class CurrencyManipulationInDBService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<CurrencyEntity> receiveCurrencyEntity(String currencyName,
                                                       Timestamp startTimestamp,
                                                       Timestamp stopTimestamp) {

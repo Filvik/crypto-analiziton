@@ -5,8 +5,8 @@ import com.example.crypto.analiziton.model.CurrencyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -14,12 +14,9 @@ public class ConverterFromCurrencyEntityToFullStatisticData {
 
 
     public List<FullStatisticData> converting(List<CurrencyEntity> currencyEntityList) {
-        List<FullStatisticData> fullStatisticData = new ArrayList<>();
-        for (CurrencyEntity currencyEntity: currencyEntityList){
-            FullStatisticData fullStatistic = converting(currencyEntity);
-            fullStatisticData.add(fullStatistic);
-        }
-        return fullStatisticData;
+        return currencyEntityList.stream()
+                .map(this::converting)
+                .collect(Collectors.toList());
     }
 
     public FullStatisticData converting(CurrencyEntity currencyEntity){
