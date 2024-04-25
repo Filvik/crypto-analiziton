@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @Component
-public class ConverterForCurrency {
+public class ConverterFromCurrencyJsonToCurrencyEntity {
 
     public CurrencyEntity convertToEntity(CurrencyJson currencyJson) {
         CurrencyEntity currencyEntity = new CurrencyEntity();

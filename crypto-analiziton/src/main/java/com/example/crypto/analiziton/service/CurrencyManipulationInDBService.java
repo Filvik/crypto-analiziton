@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -34,5 +35,12 @@ public class CurrencyManipulationInDBService {
             log.info("Size collection: " + ticks.size());
             log.info("Recording time: " + (stopRecord - startRecord));
         }
+    }
+
+    public List<CurrencyEntity> receiveCurrencyEntity(String currencyName,
+                                                      Timestamp startTimestamp,
+                                                      Timestamp stopTimestamp) {
+        return currencyRepository.findAllByCurrencyNameAndPeriodOfTime
+                (currencyName, startTimestamp, stopTimestamp);
     }
 }
