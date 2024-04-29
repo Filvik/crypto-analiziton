@@ -3,9 +3,12 @@ package com.example.crypto.analiziton.component;
 import com.example.crypto.analiziton.exeption.ValidCurrencyEntityException;
 import com.example.crypto.analiziton.helper.TimestampAdjuster;
 import com.example.crypto.analiziton.model.CurrencyEntity;
+import com.example.crypto.analiziton.service.RunStreamSubscribersService;
 import com.example.crypto.analiziton.service.TickAccumulatorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -14,12 +17,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class TickProcessingRunnable implements Runnable {
 
     private final TickAccumulatorService tickAccumulator;
     private final CheckEmptyFieldCurrencyEntityComponent emptyFieldCurrencyService;
     private CurrencyEntity lastCurrencyEntity;
     private final BlockingQueue<CurrencyEntity> messageQueue = new LinkedBlockingQueue<>();
+    @Autowired
+    private RunStreamSubscribersService runStreamSubscribersService;
 
     @Override
     public void run() {
@@ -28,15 +34,17 @@ public class TickProcessingRunnable implements Runnable {
                 CurrencyEntity currencyEntity = messageQueue.take();
                 processIncomingTick(currencyEntity);
             } catch (InterruptedException e) {
-                log.warn("Thread was interrupted during the processing of currency data." +
-                        " Exiting the loop to shut down the thread safely.");
-                Thread.currentThread().interrupt();
-                break;
+                log.warn("Thread was interrupted. Attempting to restart processing...");
+                runStreamSubscribersService.restartSession();
+            } catch (Exception e) {
+                log.error("Error during tick processing: " + e.getMessage(), e);
+                runStreamSubscribersService.restartSession();
             }
         }
+        log.warn("Came out from 'while'!!!");
     }
 
-    public void putCurrencyEntity(CurrencyEntity tick){
+    public void putCurrencyEntity(CurrencyEntity tick) {
         messageQueue.add(tick);
     }
 
