@@ -63,4 +63,15 @@ public class ReceiveDataByTicks {
                 .min()
                 .orElseThrow(() -> new IllegalArgumentException("Cannot compute minimum value on an empty list"));
     }
+
+    public String getDirection(String tickDirection) {
+        if (tickDirection.equals("PlusTick")) {
+            return "UP";
+        } else if (tickDirection.equals("MinusTick")) {
+            return "DOWN";
+        } else {
+            return "NEUTRAL";
+        }
+    }
+
 }

@@ -9,6 +9,6 @@ public class FullStatisticData {
     private String currencyName;
     private String tickDirection;
     private double price;
-    private Timestamp createdAt;
+    private Long createdAt;
 
 }
