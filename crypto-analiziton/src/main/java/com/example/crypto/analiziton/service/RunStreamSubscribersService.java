@@ -17,11 +17,9 @@ import java.util.concurrent.*;
 @Slf4j
 public class RunStreamSubscribersService {
 
-    private ExecutorService executor;
+    private final ExecutorService executor;
     private final ParseJSONCurrencyComponent parseJSONCurrencyComponent;
     private Map<String, TickProcessingRunnable> runnableMap = new ConcurrentHashMap<>();
-    private final TickAccumulatorService tickAccumulatorService;
-    private final CheckEmptyFieldCurrencyEntityComponent checkEmptyFieldCurrencyEntityComponent;
 
     public RunStreamSubscribersService(ExecutorService executor,
                                        TickAccumulatorService tickAccumulatorService,
@@ -29,9 +27,12 @@ public class RunStreamSubscribersService {
                                        ParseJSONCurrencyComponent parseJSONCurrencyComponent) {
         this.executor = executor;
         this.parseJSONCurrencyComponent = parseJSONCurrencyComponent;
-        this.tickAccumulatorService = tickAccumulatorService;
-        this.checkEmptyFieldCurrencyEntityComponent = checkEmptyFieldCurrencyEntityComponent;
-        initializeRunnables();
+
+        for (CurrencyEnum currency : CurrencyEnum.values()) {
+            runnableMap.put(currency.getSymbol(),
+                    new TickProcessingRunnable(tickAccumulatorService, checkEmptyFieldCurrencyEntityComponent));
+        }
+        runnableMap.values().forEach(executor::submit);
     }
 
     public TextMessage createTaskForCurrency(CurrencyEnum currency) {
@@ -49,7 +50,7 @@ public class RunStreamSubscribersService {
             if (message.getPayload().contains("\"success\":true")) {
                 log.info("Confirmation of successful registration to receive data received.");
             } else {
-                log.info("Received: " + message.getPayload());
+                //log.info("Received: " + message.getPayload());
                 CurrencyEntity currencyEntity = parseJSONCurrencyComponent.parseJson(message);
                 runnableMap.get(currencyEntity.getCurrencyName()).putCurrencyEntity(currencyEntity);
             }
@@ -59,35 +60,21 @@ public class RunStreamSubscribersService {
     }
 
     public void shutdown() {
+        runnableMap.values().forEach(TickProcessingRunnable::stopRunning);
+        executor.shutdown();
         try {
-            log.info("Shutting down executor service and message processor...");
-            executor.shutdown();
-            if (!executor.awaitTermination(10000, TimeUnit.MILLISECONDS)) {
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
+                if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
+                    log.error("Executor did not terminate");
+                }
             }
         } catch (InterruptedException e) {
-            log.error("Failed to shut down executor service.", e);
+            Thread.currentThread().interrupt();
             executor.shutdownNow();
         }
     }
 
-    public void restartSession() {
-        log.info("Restart session...");
-        shutdown();
-        executor = Executors.newCachedThreadPool();
-        runnableMap.clear();
-        initializeRunnables();
-    }
-
-    private void initializeRunnables() {
-        log.info("Initializing runnables for each currency...");
-        for (CurrencyEnum currency : CurrencyEnum.values()) {
-            runnableMap.put(currency.getSymbol(),
-                    new TickProcessingRunnable(tickAccumulatorService,
-                            checkEmptyFieldCurrencyEntityComponent));
-        }
-        runnableMap.values().forEach(executor::submit);
-    }
 
     private String getSubscriptionMessageForCurrency(CurrencyEnum currency) {
         return String.format("{\"op\":\"subscribe\",\"args\":[\"tickers.%s\"]}", currency.getSymbol());
