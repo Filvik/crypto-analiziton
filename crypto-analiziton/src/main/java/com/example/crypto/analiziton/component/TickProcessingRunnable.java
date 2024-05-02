@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 @Slf4j
@@ -20,6 +21,7 @@ public class TickProcessingRunnable implements Runnable {
     private final CheckEmptyFieldCurrencyEntityComponent emptyFieldCurrencyService;
     private CurrencyEntity lastCurrencyEntity;
     private final BlockingQueue<CurrencyEntity> messageQueue = new LinkedBlockingQueue<>();
+    private final AtomicBoolean running = new AtomicBoolean(true);
 
     @Override
     public void run() {
@@ -30,10 +32,13 @@ public class TickProcessingRunnable implements Runnable {
             } catch (InterruptedException e) {
                 log.warn("Thread was interrupted during the processing of currency data." +
                         " Exiting the loop to shut down the thread safely.");
-                Thread.currentThread().interrupt();
-                break;
+                if (!running.get()) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             }
         }
+        log.warn("Stop run.");
     }
 
     public void putCurrencyEntity(CurrencyEntity tick){
@@ -125,6 +130,10 @@ public class TickProcessingRunnable implements Runnable {
             throw new ValidCurrencyEntityException("CurrencyEntity from BD failed validation.");
         }
         return currencyEntityForRecord;
+    }
+
+    public void stopRunning() {
+        running.set(false);
     }
 }
 

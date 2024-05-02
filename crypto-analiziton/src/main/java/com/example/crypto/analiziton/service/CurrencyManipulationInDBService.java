@@ -19,7 +19,6 @@ public class CurrencyManipulationInDBService {
 
     private final CurrencyRepository currencyRepository;
 
-    @Transactional
     public void saveCollectionCurrencyEntityInDB(List<CurrencyEntity> ticks) {
         if (!ticks.isEmpty()) {
             long startRecord = System.currentTimeMillis();
