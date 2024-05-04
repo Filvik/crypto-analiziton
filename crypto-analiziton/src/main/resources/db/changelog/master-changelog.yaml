@@ -1,9 +1,13 @@
 databaseChangeLog:
   - include:
-      # v.1.0 create table
+      # v.1.0 create table currency
       file: db/changelog/v1/v1.0.sql
   - include:
-      # v.1.0 create table
+      # v.1.1 update table currency
       file: db/changelog/v1/v1.1.sql
+  - include:
+      # v.1.2 create table volume
+      file: db/changelog/v1/v1.2.sql
+
 
 

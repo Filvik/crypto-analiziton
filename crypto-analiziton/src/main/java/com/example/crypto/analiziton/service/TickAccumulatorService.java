@@ -43,8 +43,6 @@ public class TickAccumulatorService {
         List<CurrencyEntity> ticksForRecord = new ArrayList<>();
         log.info("Before record in new collection: " + ticks.size());
         ticks.drainTo(ticksForRecord);
-        log.info("After record in new collection: " + ticks.size());
-        log.info("Before record in DB: " + ticksForRecord.size());
         if (!ticksForRecord.isEmpty()) {
             manipulationInDBService.saveCollectionCurrencyEntityInDB(ticksForRecord);
         }

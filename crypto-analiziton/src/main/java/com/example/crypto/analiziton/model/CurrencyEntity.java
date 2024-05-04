@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "currency", uniqueConstraints = {
@@ -29,6 +30,10 @@ public class CurrencyEntity {
     @Column(name = "price", nullable = false)
     private double price;
 
+    @Schema(description = "Объёмы")
+    @Column(name = "volume")
+    private double volume;
+
     @Schema(description = "Цена лучшего предложения покупки")
     @Column(name = "bid_price")
     private double bidPrice;
@@ -48,4 +53,5 @@ public class CurrencyEntity {
     @Schema(description = "Время получения")
     @Column(name = "created_at", nullable = false)
     private Timestamp createdAt;
+
 }
