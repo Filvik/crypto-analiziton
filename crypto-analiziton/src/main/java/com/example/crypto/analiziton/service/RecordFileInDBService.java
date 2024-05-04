@@ -37,23 +37,42 @@ public class RecordFileInDBService {
     }
 
     private void saveDataFromFile(File file) {
-        int i = 0;
+        int savedLines = 0;
+        int skippedLines = 0;
         String currencyName = file.getName().substring(0, file.getName().indexOf("-"));
+        String[] expectedHeader = {"id", "price", "qty", "quote_qty", "time", "is_buyer_maker"};
+
         try (CSVReader reader = new CSVReader(new FileReader(file, StandardCharsets.UTF_8))) {
-            reader.skip(1);
+            String[] firstLine = reader.peek();
+            if (isHeader(firstLine, expectedHeader)) {
+                reader.readNext();
+            }
+
             String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
                 try {
                     DataFromBinanceAboutVolume volume = parseVolumeDataFromFile.parseVolumeData(nextLine, currencyName);
                     volumeRepository.save(volume);
-                    i++;
+                    savedLines++;
                 } catch (Exception e) {
-                    log.warn("Error recording line: " + e.getMessage());
+                    skippedLines++;
                 }
             }
-            log.info("Recorded: " + i + " lines from file: " + file.getName());
+            log.info("Recorded: " + savedLines + " lines from file: " + file.getName());
+            log.warn("Skipped: " + skippedLines + " lines due to errors.");
         } catch (IOException | CsvException e) {
             log.warn("Error processing file: " + file.getName() + ", " + e.getMessage());
         }
     }
+
+    private boolean isHeader(String[] firstLine, String[] expectedHeader) {
+        if (firstLine == null || firstLine.length != expectedHeader.length) return false;
+        for (int i = 0; i < firstLine.length; i++) {
+            if (!firstLine[i].equalsIgnoreCase(expectedHeader[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
