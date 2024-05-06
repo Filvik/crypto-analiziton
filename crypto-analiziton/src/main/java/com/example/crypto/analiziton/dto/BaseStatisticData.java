@@ -15,6 +15,7 @@ public class BaseStatisticData {
     private double priceStop;
     private double maxValue;
     private double minValue;
+    private double volume;
     private Timestamp startTime;
     private Timestamp stopTime;
 }

@@ -2,13 +2,11 @@ package com.example.crypto.analiziton.dto;
 
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 @Data
-public class FullStatisticData {
+public class FullDetailsStatisticData {
     private String currencyName;
-    private String tickDirection;
     private double price;
+    private double volume;
     private Long createdAt;
 
 }

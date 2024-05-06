@@ -2,7 +2,7 @@ package com.example.crypto.analiziton.service;
 
 import com.example.crypto.analiziton.converter.ConverterFromCurrencyEntityToBaseStatisticData;
 import com.example.crypto.analiziton.converter.ConverterFromCurrencyEntityToFullStatisticData;
-import com.example.crypto.analiziton.dto.FullStatisticData;
+import com.example.crypto.analiziton.dto.FullDetailsStatisticData;
 import com.example.crypto.analiziton.dto.BaseStatisticData;
 import com.example.crypto.analiziton.model.CurrencyEntity;
 import lombok.RequiredArgsConstructor;
@@ -36,17 +36,17 @@ public class ReceiveDataService {
         return baseStatisticData;
     }
 
-    public List<FullStatisticData> receiveCollectionDateFromDB(String currencyName, Long dateStart, Long dateStop) {
-        List<FullStatisticData> fullStatisticData = new ArrayList<>();
+    public List<FullDetailsStatisticData> receiveCollectionDateFromDB(String currencyName, Long dateStart, Long dateStop) {
+        List<FullDetailsStatisticData> fullDetailsStatisticData = new ArrayList<>();
         Timestamp startTimestamp = new Timestamp(dateStart);
         Timestamp stopTimestamp = new Timestamp(dateStop);
         List<CurrencyEntity> currencyEntityList = currencyManipulationInDBService
                 .receiveCurrencyEntity(currencyName, startTimestamp, stopTimestamp);
 
         if (!currencyEntityList.isEmpty()) {
-            fullStatisticData = converterFromCurrencyEntityToFullStatisticData.converting(currencyEntityList);
+            fullDetailsStatisticData = converterFromCurrencyEntityToFullStatisticData.converting(currencyEntityList);
         }
 
-        return fullStatisticData;
+        return fullDetailsStatisticData;
     }
 }

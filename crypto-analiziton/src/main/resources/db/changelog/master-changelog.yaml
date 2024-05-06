@@ -11,6 +11,9 @@ databaseChangeLog:
   - include:
       # v.1.3 create indexes for tables
       file: db/changelog/v1/v1.3.sql
+  - include:
+      # v.1.4 create view for add volumes in currency table
+      file: db/changelog/v1/v1.4.sql
 
 
 

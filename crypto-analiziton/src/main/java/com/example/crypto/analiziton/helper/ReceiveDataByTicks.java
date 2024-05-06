@@ -74,4 +74,9 @@ public class ReceiveDataByTicks {
         }
     }
 
+    public double receiveSumVolume(List<CurrencyEntity> currencyEntityList) {
+        return currencyEntityList.stream()
+                .mapToDouble(CurrencyEntity::getVolume)
+                .sum();
+    }
 }

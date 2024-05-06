@@ -30,6 +30,7 @@ public class ConverterFromCurrencyEntityToBaseStatisticData {
         baseStatisticData.setAllCountingTicks(receiveDataByTicks.receiveAllCountingTicks(currencyEntityList));
         baseStatisticData.setPriceStart(receiveDataByTicks.receiveStartPrice(currencyEntityList, startTimestamp));
         baseStatisticData.setPriceStop(receiveDataByTicks.receiveStopPrice(currencyEntityList, stopTimestamp));
+        baseStatisticData.setVolume(receiveDataByTicks.receiveSumVolume(currencyEntityList));
         baseStatisticData.setMaxValue(receiveDataByTicks.receiveMaxValue(currencyEntityList));
         baseStatisticData.setMinValue(receiveDataByTicks.receiveMinValue(currencyEntityList));
         return baseStatisticData;

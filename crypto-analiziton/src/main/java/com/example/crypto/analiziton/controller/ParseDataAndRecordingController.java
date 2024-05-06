@@ -18,7 +18,7 @@ public class ParseDataAndRecordingController {
     @GetMapping(value = "/recording")
     @Operation(summary = "Запись данных из csv файла в БД", tags = "Контроллер записи данных из файла")
     public ResponseEntity<?> recordingInDB() {
-        log.info("Вызван метод recordingInDB.");
+        log.info("Called method recordingInDB.");
         try {
             recordFileInDBService.saveInDBFromFolder();
         }

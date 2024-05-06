@@ -1,6 +1,6 @@
 package com.example.crypto.analiziton.service;
 
-import com.example.crypto.analiziton.dto.FullStatisticData;
+import com.example.crypto.analiziton.dto.FullDetailsStatisticData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,17 +17,17 @@ public class CsvWriterService {
     @Value("${csv.output.path}")
     private String csvFilePath;
 
-    public void getCsvForListFullStatisticData(List<FullStatisticData> fullStatisticDataList) {
-        if (!fullStatisticDataList.isEmpty()) {
+    public void getCsvForListFullStatisticData(List<FullDetailsStatisticData> fullDetailsStatisticDataList) {
+        if (!fullDetailsStatisticDataList.isEmpty()) {
             try (BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvFilePath))) {
                 // Write CSV header
-                csvWriter.append("currencyName,tickDirection,price,createdAt\n");
+                csvWriter.append("currencyName, price, volume, createdAt\n");
                 // Write CSV data
-                for (FullStatisticData data : fullStatisticDataList) {
+                for (FullDetailsStatisticData data : fullDetailsStatisticDataList) {
                     csvWriter.append(String.join(",",
                             String.valueOf(data.getCurrencyName()),
-                            String.valueOf(data.getTickDirection()),
                             String.valueOf(data.getPrice()),
+                            String.valueOf(data.getVolume()),
                             String.valueOf(data.getCreatedAt())));
                     csvWriter.append("\n");
                 }
