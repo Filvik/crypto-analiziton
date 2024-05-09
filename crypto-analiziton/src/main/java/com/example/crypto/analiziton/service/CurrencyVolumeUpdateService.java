@@ -16,11 +16,11 @@ public class CurrencyVolumeUpdateService {
     @Transactional
     public int updateCurrencyVolumes() {
         String sql = """
+сг                REFRESH MATERIALIZED VIEW view_currency_volumes;
                 UPDATE currency AS c
                 SET volume = vcv.total_volume
-                FROM view_currency_volume AS vcv
-                WHERE c.currency_name = vcv.currency_name
-                AND (c.created_at = vcv.tick_end OR (vcv.tick_end = TIMESTAMP 'infinity' AND c.created_at > vcv.tick_start));
+                FROM view_currency_volumes AS vcv
+                WHERE c.created_at = vcv.tick_end;
                 """;
         return jdbcTemplate.update(sql);
     }

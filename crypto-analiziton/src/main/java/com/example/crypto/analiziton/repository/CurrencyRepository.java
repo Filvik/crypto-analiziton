@@ -7,13 +7,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.ArrayList;
 
 @Repository
 public interface CurrencyRepository extends JpaRepository<CurrencyEntity, Long> {
 
-    @Query("SELECT c FROM CurrencyEntity c WHERE c.currencyName = :currencyName AND c.createdAt >= :dateStart AND c.createdAt <= :dateStop")
-    List<CurrencyEntity> findAllByCurrencyNameAndPeriodOfTime(
+    @Query("SELECT c FROM CurrencyEntity c WHERE c.currencyName = :currencyName AND c.createdAt >= :dateStart AND c.createdAt <= :dateStop ORDER BY c.createdAt ASC")
+    ArrayList<CurrencyEntity> findAllByCurrencyNameAndPeriodOfTime(
             @Param("currencyName") String currencyName,
             @Param("dateStart") Timestamp dateStart,
             @Param("dateStop") Timestamp dateStop);

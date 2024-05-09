@@ -59,7 +59,7 @@ public class RecordFileInDBService {
                 }
             }
             log.info("Recorded: " + savedLines + " lines from file: " + file.getName());
-            log.warn("Skipped: " + skippedLines + " lines due to errors.");
+            log.info("Skipped: " + skippedLines + " lines due to errors.");
         } catch (IOException | CsvException e) {
             log.warn("Error processing file: " + file.getName() + ", " + e.getMessage());
         }
