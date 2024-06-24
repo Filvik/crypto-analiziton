@@ -21,7 +21,7 @@ public class CsvWriterService {
         if (!fullDetailsStatisticDataList.isEmpty()) {
             try (BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvFilePath))) {
                 // Write CSV header
-                csvWriter.append("currencyName, price, volume, createdAt\n");
+                csvWriter.append("currencyName,price,volume,createdAt\n");
                 // Write CSV data
                 for (FullDetailsStatisticData data : fullDetailsStatisticDataList) {
                     csvWriter.append(String.join(",",

@@ -16,7 +16,7 @@ public class CurrencyVolumeUpdateService {
     @Transactional
     public int updateCurrencyVolumes() {
         String sql = """
-сг                REFRESH MATERIALIZED VIEW view_currency_volumes;
+                REFRESH MATERIALIZED VIEW view_currency_volumes;
                 UPDATE currency AS c
                 SET volume = vcv.total_volume
                 FROM view_currency_volumes AS vcv
